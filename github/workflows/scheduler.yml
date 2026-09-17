@@ -1,0 +1,27 @@
+name: MNCOS Auto-Pilot Scheduler
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+  scan_and_process:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wake up MNCOS Core
+        run: |
+          curl -X GET "https://mncos-core.onrender.com/health"
+          
+      - name: Trigger Lead Scan
+        run: |
+          curl -X POST "https://mncos-core.onrender.com/evaluate" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "action": "SCAN_APOLLO_LEADS",
+            "context": {
+              "observation_id": "OBS-AUTO-001",
+              "context_vector": "Maritime-Sovereign-Operations",
+              "historical_trace": ["GitHub-Action-Trigger"],
+              "governance_boundary": "SCU32-CIVILIZATIONAL-COHERENCE-CORE"
+            }
+          }'
